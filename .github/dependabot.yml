@@ -1,0 +1,31 @@
+# Weekly dependency update pull requests, grouped so they arrive as a few PRs rather than one per package. Each one
+# runs through CI and gets a Vercel preview before merging.
+#
+# The cooldown holds back versions until they've been public for a while: hijacked releases are usually spotted and
+# pulled within hours or days, so a new version is never proposed the day it ships. Majors wait longest.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
+      semver-minor-days: 7
+      semver-patch-days: 7
+    groups:
+      production:
+        dependency-type: production
+        update-types: [minor, patch]
+      development:
+        dependency-type: development
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7

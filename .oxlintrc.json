@@ -1,0 +1,69 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  // ESLint-compatible rules (core, React, hooks, jsx-a11y, import, unicorn, TypeScript), with type-aware checks via
+  // `--type-aware`. oxlint is used rather than ESLint because typescript-eslint doesn't support TypeScript 7 yet.
+  "plugins": ["react", "typescript", "oxc", "jsx-a11y", "import", "unicorn"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "warn"
+  },
+  "env": { "browser": true, "es2024": true },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "react/jsx-key": "error",
+    "react/no-danger": "error",
+    "react/jsx-no-target-blank": "error",
+    "jsx-a11y/alt-text": "error",
+    "jsx-a11y/anchor-is-valid": "error",
+    "jsx-a11y/aria-props": "error",
+    "jsx-a11y/aria-role": "error",
+    "jsx-a11y/role-has-required-aria-props": "error",
+    "jsx-a11y/click-events-have-key-events": "error",
+    "jsx-a11y/no-static-element-interactions": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/await-thenable": "error",
+    "import/no-cycle": "error",
+    "import/no-duplicates": "error",
+    "no-console": ["error", { "allow": ["error"] }],
+    "eqeqeq": ["error", "smart"],
+
+    // Off on purpose:
+    // the automatic JSX runtime (React 17+) doesn't need React in scope
+    "react/react-in-jsx-scope": "off",
+    // index keys are only used for fixed, never-reordered decorative lists (stars, traces)
+    "react/no-array-index-key": "off",
+    // GSAP hands back loosely typed conditions and elements; the narrowing casts are deliberate
+    "typescript/no-unsafe-type-assertion": "off",
+    // useGSAP and matchMedia callbacks return a cleanup only on some paths, by design
+    "typescript/consistent-return": "off",
+    // GSAP's static methods (ScrollTrigger.update) are meant to be passed unbound
+    "typescript/unbound-method": "off",
+    // the spread strings are ASCII copy split into letters for animation
+    "typescript/no-misused-spread": "off",
+    "typescript/restrict-template-expressions": "off",
+    // these copy first ([...x].reverse()); toReversed() would add nothing
+    "unicorn/no-array-reverse": "off",
+    "unicorn/consistent-function-scoping": "off",
+    // `import { gsap } from 'gsap'` is GSAP's documented form; CSS is imported for its side effects
+    "import/no-named-as-default": "off",
+    "import/no-unassigned-import": "off",
+    // a div with role="group" labels the filter buttons without fieldset's default styling
+    "jsx-a11y/prefer-tag-over-role": "off",
+    // module-level, run once at load
+    "oxc/no-map-spread": "off"
+  },
+  "overrides": [
+    {
+      // build scripts report to the terminal
+      "files": ["scripts/**"],
+      "env": { "node": true },
+      "rules": { "no-console": "off" }
+    }
+  ],
+  "ignorePatterns": ["dist", "node_modules"]
+}
