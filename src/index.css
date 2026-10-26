@@ -1,6 +1,5 @@
 /* Inter is bundled rather than pulled from Google Fonts, which chained two extra origins in front of first paint */
 @import '@fontsource/inter/latin-400.css';
-@import '@fontsource/inter/latin-500.css';
 @import 'tailwindcss';
 
 /* Short desktop screens (13" laptops with browser chrome): the pinned experience panel tightens up to fit */
@@ -94,6 +93,12 @@
   .lenis-smooth {
     scroll-behavior: auto !important;
   }
+  /* Touch screens skip Lenis, so in-page links glide natively there instead */
+  @media (prefers-reduced-motion: no-preference) {
+    html:not(.lenis) {
+      scroll-behavior: smooth;
+    }
+  }
   body {
     @apply bg-surface font-body text-ink antialiased;
   }
@@ -115,6 +120,26 @@
   }
 }
 
+/* Disclosures open by growing to their content's height where the browser can animate to auto (elsewhere they
+   open instantly) */
+@utility disclosure {
+  interpolate-size: allow-keywords;
+  &::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      content-visibility 0.35s allow-discrete;
+  }
+  &[open]::details-content {
+    block-size: auto;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &::details-content {
+      transition: none;
+    }
+  }
+}
 @utility mono {
   @apply font-mono text-[11px] leading-4 font-medium tracking-[0.18em] uppercase;
 }

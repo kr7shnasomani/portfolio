@@ -84,13 +84,28 @@ function useCoverScale(ref: RefObject<HTMLDivElement | null>) {
   return fit
 }
 
+// Off screen, a city's 3D faces would stay live GPU layers that the browser re-stacks on every frame of the page, so
+// rendering is skipped until it comes back within a screen's reach
+function useOnScreen(ref: RefObject<HTMLDivElement | null>) {
+  const [on, setOn] = useState(true)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(([e]) => setOn(e.isIntersecting), { rootMargin: '50% 0px' })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [ref])
+  return on
+}
+
 export default function City({ boxes, tilt = 0, origin = '50% 50%' }: { boxes: Box[]; tilt?: number; origin?: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const { s, sx } = useCoverScale(ref)
+  const on = useOnScreen(ref)
   return (
     <div ref={ref} aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       <div
-        className="absolute top-1/2 left-1/2"
+        className={`absolute top-1/2 left-1/2 ${on ? '' : '[content-visibility:hidden]'}`}
         style={{ width: STAGE_W, height: STAGE_H, marginLeft: -STAGE_W / 2, marginTop: -STAGE_H / 2, transform: `scale(${s})`, perspective: PERSPECTIVE, perspectiveOrigin: origin }}
       >
         <div className="absolute top-1/2 left-1/2 [transform-style:preserve-3d]" style={{ transform: `rotateX(${tilt}deg) scaleX(${sx})` }}>

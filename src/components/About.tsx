@@ -19,7 +19,7 @@ const layouts = [
   { lines: toLines([4, 2, 3, 2, 4, 4, 2, 3, 2, 2, 3, 4, 3, 3]), className: 'block text-[min(48px,8.6cqi)] leading-[1.12] md:hidden' },
 ]
 
-// Pinned statement: each letter rises 0.32em and fades in on a staggered scrub, then a second staggered pass warms
+// Pinned statement: each letter rises about 0.32em and fades in on a staggered scrub, then a second staggered pass warms
 // it from faint grey to ink. Tablet and desktop scrub across the whole pinned block, phones across the copy itself.
 function Statement() {
   const ref = useRef<HTMLDivElement>(null)
@@ -34,13 +34,15 @@ function Statement() {
         const { mobile, motionOk } = ctx.conditions as { mobile: boolean; motionOk: boolean }
         if (!motionOk) return
         const chars = gsap.utils.toArray<HTMLElement>('[data-char]', wrap).filter((c) => c.offsetParent)
-        gsap.set(chars, { autoAlpha: 0, y: '0.32em', color: '#565666' })
+        // yPercent of each letter's own box (~0.32em at these line heights): an em offset made GSAP measure every letter
+        gsap.set(chars, { autoAlpha: 0, yPercent: 29, color: '#565666', force3D: false })
         gsap
           .timeline({
-            defaults: { ease: 'none' },
+            // 2D transforms: a 3D one would promote every moving letter to its own GPU layer, hundreds at once
+            defaults: { ease: 'none', force3D: false },
             scrollTrigger: mobile ? { trigger: pin, start: 'top 75%', end: 'bottom 55%', scrub: true } : { trigger: wrap, start: 'top 88%', end: 'bottom bottom', scrub: true },
           })
-          .to(chars, { autoAlpha: 1, y: 0, duration: 0.28, stagger: { amount: 0.52 } }, 0.03)
+          .to(chars, { autoAlpha: 1, yPercent: 0, duration: 0.28, stagger: { amount: 0.52 } }, 0.03)
           .to(chars, { color: '#fbfaf9', duration: 0.24, stagger: { amount: 0.52 } }, 0.24)
       })
     },
@@ -51,7 +53,7 @@ function Statement() {
     <div ref={ref} className="md:h-[155svh] md:motion-reduce:h-auto lg:h-[170svh] lg:motion-reduce:h-auto">
       <div
         data-statement-pin
-        className="shell flex min-h-svh flex-col justify-start pt-[16svh] pb-24 md:sticky md:top-0 md:h-svh md:min-h-0 md:justify-center md:pt-0 md:pb-[16svh] motion-reduce:static motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:pt-28"
+        className="shell flex flex-col justify-start pt-[16svh] pb-10 md:sticky md:top-0 md:h-svh md:min-h-0 md:justify-center md:pt-0 md:pb-[16svh] motion-reduce:static motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:pt-28"
       >
         <div className="@container max-w-[75.5rem]">
           <Tag className="mb-12 md:mb-[72px]">About</Tag>
@@ -87,7 +89,7 @@ export default function About() {
     // so the browser never re-composites a full-height mask while the statement animates)
     <section
       id="about"
-      className="relative z-10 -mt-[35svh] bg-[linear-gradient(to_bottom,transparent,var(--color-surface)_20svh)] motion-reduce:mt-0 motion-reduce:bg-surface md:-mt-[48svh] md:motion-reduce:mt-0"
+      className="relative z-10 -mt-[55svh] bg-[linear-gradient(to_bottom,transparent,var(--color-surface)_20svh)] motion-reduce:mt-0 motion-reduce:bg-surface md:-mt-[48svh] md:motion-reduce:mt-0"
     >
       <h2 className="sr-only">About</h2>
       <Statement />

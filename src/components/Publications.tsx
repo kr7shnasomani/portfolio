@@ -75,7 +75,7 @@ function Card({ paper, i }: { paper: Paper; i: number }) {
 export default function Publications() {
   return (
     <section id="publications" className="relative bg-surface">
-      <div className="shell pt-8 pb-28 lg:pb-40">
+      <div className="shell pt-8 pb-20 md:pb-28 lg:pb-40">
         <Reveal y={18} duration={0.6} stagger={0.08} start="top 75%" className="flex flex-col gap-8">
           <div data-reveal>
             <Tag>Research</Tag>

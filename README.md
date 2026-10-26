@@ -6,7 +6,17 @@
 
 A single-page portfolio built as a small city at dusk. Gradient buildings rush past the camera as the page scrolls, the sky cools from sunset to night, and every section after that borrows the same geometry: chamfered corners, pixel lettering and gradient light.
 
+**Like the theme? It's free to use for your own portfolio.** See [Use it for your own portfolio](#use-it-for-your-own-portfolio).
+
 </div>
+
+## What's inside
+
+- **React 19 + TypeScript + Vite**, styled with **Tailwind CSS v4**
+- **GSAP ScrollTrigger + Lenis** for the scroll animations and smooth scrolling
+- **KS Pixel**, a display font generated from code for this site
+- **No backend, no database, no environment variables.** It builds to static files you can host anywhere.
+- **Accessible:** keyboard friendly, screen-reader labels, and a fully static page for people who turn off animations
 
 ## Design
 
@@ -69,11 +79,13 @@ GSAP's ScrollTrigger drives every scroll effect, with Lenis for inertial scrolli
 
 ## Quick start
 
-**Requirements:** Node 22.12 or newer (CI and Vercel use 24, see `.nvmrc`) and npm. Python 3 only if you rebuild the display font.
+**Requirements:** [Node.js](https://nodejs.org) 22.12 or newer (CI and Vercel use 24, see `.nvmrc`) and npm. Python 3 only if you rebuild the display font.
 
 ```bash
-npm install
-npm run dev         # http://localhost:5173
+git clone https://github.com/kr7shnasomani/portfolio.git
+cd portfolio
+npm ci
+npm run dev         # open http://localhost:5173
 ```
 
 | Script | What it does |
@@ -85,9 +97,90 @@ npm run dev         # http://localhost:5173
 | `npm run lint` | oxlint with type-aware rules |
 | `npm run typecheck` | TypeScript only |
 | `npm run format` / `format:check` | Apply / verify Prettier formatting |
-| `npm run resume` | Copy the latest resume PDF into the site ([Resume](#resume)) |
 
 Run `npm run check` before pushing; it's exactly what CI runs.
+
+## Use it for your own portfolio
+
+You're welcome to use this theme for your own site. It takes about an hour, and most of that is writing your own content.
+
+1. **Get a copy.** Fork the repo on GitHub (or clone it and push to a new repo of your own), then run the [Quick start](#quick-start).
+2. **Put in your details.** Nearly everything you'd change is in one file, `src/content.ts`. [Editing content](#editing-content) lists each field. A few things live elsewhere:
+   - `index.html`: the page `<title>`, the `description` meta tag (what Google shows) and the preloaded photo path
+   - `src/components/Hero.tsx`: the role line under your name ("Applied AI Engineer")
+3. **Swap the files.** Replace my photo, resume and images with yours (see [Images and assets](#images-and-assets)):
+   - **Photo:** add yours to `public/image-uploads/` and point `profile.photo` and the preload in `index.html` at it.
+   - **Favicon:** replace `public/favicon.ico` and `public/apple-touch-icon.png`.
+   - **Resume:** put your PDF in `public/` and set `profile.resume` to its path, for example `'/Jane-Doe-Resume.pdf'`. To update it later, replace the file with one of the same name and push.
+   - **Logos and photos** for your companies, schools, projects and achievements go in the folders listed in [Images and assets](#images-and-assets). Delete the ones you don't use.
+4. **Check it.** Run `npm run check`. The build tells you if a file is missing or a section has the wrong number of entries.
+5. **Put it online.** See [Deploying](#deploying). Vercel's free plan is enough.
+6. **Give credit.** See [Credit and license](#credit-and-license). It's one link.
+
+Things to keep in mind:
+
+- **Some sections need a fixed number of entries:** exactly three schools, exactly three jobs and four projects. That's how their layouts are drawn. The [Editing content](#editing-content) table marks each one.
+- **The display font is uppercase only.** It has A–Z, 0–9 and common punctuation. Other characters fall back to a monospace font (see [Display font](#display-font)).
+- **Please don't reuse my personal content.** That means my photo, resume and the text about me. See [Credit and license](#credit-and-license).
+
+## Editing content
+
+Everything below is in `src/content.ts` unless noted. After editing, run `npm run check`.
+
+| To change | How |
+| --- | --- |
+| Name, email, photo, resume, footer bio | `profile`. The hero's role line ("Applied AI Engineer") is in `Hero.tsx`. |
+| About statement | `profile.tagline`. Its line breaks are hand-set per breakpoint in `About.tsx` (`toLines([...])`); **the counts must add up to the tagline's word count**, or the dev server throws an error saying so. |
+| Social links | `socials`: `label`, `href`, an icon in `public/socials/`, and a brand `color` for the hover fill. LeetCode is commented out; uncomment it to show it. |
+| Education | `education`, newest first. **Exactly three entries**: the skyline is drawn for three towers, and TypeScript fails the build otherwise. The intro sentence is in `Education.tsx`. |
+| Experience | `experience`, newest first: `company`, `role`, `location` (`City · Country`), `period`, `logo`, `summary`, `points`. **Exactly three entries**, since the route map has three stations. |
+| Projects | `projects`: `title`, `description`, `href`, `logo`. The grid is laid out for **four** projects (a large first card, a wide last card). |
+| Papers | `publications`. Add `link: { href, label }` once a paper is public; leave it out to show "Publication pending". |
+| Achievements | `achievements`, newest first: `title`, `highlight` (e.g. `'Winner.'`), `date`, `description`, `image`, optional `full` (uncropped image for the dialog) and `focus` (CSS `object-position` for the crop). |
+| Organisations in an achievement | Write `{key}` in the description and add `key` to `orgs`: `name`, `href`, optional `logo`. A key with no entry throws an error naming it. |
+| Tools | `skills`: `tool(name, file, group, href)`, where `group` is one of the `skillGroups` ids (`data`, `eng`, `ml`). Filter captions are in `skillGroups`. |
+| Nav sections | `sections`: ids must match the `id` on each section element. |
+
+## Images and assets
+
+Files in `public/` are served from the site root: `public/orgs/atos.svg` becomes `/orgs/atos.svg`.
+
+| Asset | Folder | Format and size |
+| --- | --- | --- |
+| Achievement photos | `public/image-uploads/` | WebP about 1200px on the long side, quality ~75 (the card shows ~572×440) |
+| Toolkit icons | `public/image-uploads/` | SVG, or WebP at 160px |
+| Organisation icons | `public/orgs/` | SVG, or WebP at 64px; shown on a white tile, so dark and light marks both work |
+| Company, school, venue logos | `public/companies/`, `schools/`, `venues/` | WebP or SVG, small |
+| Project marks | `public/projects/` | WebP with a transparent background |
+
+- **Case matters.** `Logo.png` and `logo.png` are different files on Vercel and in CI. `npm run build` checks every path and fails with the file name if one doesn't match.
+- **Prefer names without spaces.** Older photos have them and work, but new files should use dashes.
+- **SVGs from other sites** are only ever used through `<img>` or CSS masks, never inlined, so they can't run scripts.
+
+## Deploying
+
+The site is static, so any static host works. On Vercel:
+
+1. Push to GitHub.
+2. In Vercel, **Add New → Project** and import the repo. It detects Vite: build command `npm run build`, output directory `dist`. No environment variables are needed.
+3. Optional: **Settings → Domains**, add a custom domain and set the DNS records Vercel shows.
+
+`vercel.json` applies the security headers automatically. Every later push to `main` redeploys.
+
+**On Netlify or Cloudflare Pages,** use the same build command and output directory; `public/_headers` applies the security headers there.
+
+**Visitor analytics.** `index.html` loads [Vercel Web Analytics](https://vercel.com/docs/analytics) (free, no cookies). To see your numbers, turn it on in your Vercel project's **Analytics** tab, or with `vercel project web-analytics` from the [Vercel CLI](https://vercel.com/docs/cli). On another host, delete the `/_vercel/insights/script.js` line from `index.html`.
+
+## Display font
+
+KS Pixel is generated, not drawn by hand: every glyph is built from rectangles and 45° strokes in `scripts/build-font.py` and compiled to `public/fonts/ks-pixel.woff2`. The compiled font is committed, so you only need this if you change or add glyphs.
+
+```bash
+pip install fonttools brotli shapely
+python3 scripts/build-font.py
+```
+
+It covers A–Z (lowercase maps to the capitals), 0–9 and `. , : ; ! ' ? - – · % × & $ /`. Any other character in a display heading falls back to the monospace font, so add a glyph before using it.
 
 ## How the code is organised
 
@@ -124,41 +217,9 @@ vercel.json           security headers on Vercel
 
 Data flows one way: `content.ts` → components. Components hold layout, motion and short labels (headings, buttons); anything you'd update as your career changes lives in `content.ts`.
 
-## Editing content
-
-Everything below is in `src/content.ts` unless noted. After editing, run `npm run check`.
-
-| To change | How |
-| --- | --- |
-| Name, email, photo, footer bio | `profile`. The hero's role line ("Applied AI Engineer") is in `Hero.tsx`. |
-| About statement | `profile.tagline`. Its line breaks are hand-set per breakpoint in `About.tsx` (`toLines([...])`); **the counts must add up to the tagline's word count**, or the dev server throws an error saying so. |
-| Social links | `socials`: `label`, `href`, an icon in `public/socials/`, and a brand `color` for the hover fill. LeetCode is commented out; uncomment it to show it. |
-| Education | `education`, newest first. **Exactly three entries**: the skyline is drawn for three towers, and TypeScript fails the build otherwise. The intro sentence is in `Education.tsx`. |
-| Experience | `experience`, newest first: `company`, `role`, `location` (`City · Country`), `period`, `logo`, `summary`, `points`. **Exactly three entries**, since the route map has three stations. |
-| Projects | `projects`: `title`, `description`, `href`, `logo`. The grid is laid out for **four** projects (a large first card, a wide last card). |
-| Papers | `publications`. Add `link: { href, label }` once a paper is public; leave it out to show "Publication pending". |
-| Achievements | `achievements`, newest first: `title`, `highlight` (e.g. `'Winner.'`), `date`, `description`, `image`, optional `full` (uncropped image for the dialog) and `focus` (CSS `object-position` for the crop). |
-| Organisations in an achievement | Write `{key}` in the description and add `key` to `orgs`: `name`, `href`, optional `logo`. A key with no entry throws an error naming it. |
-| Tools | `skills`: `tool(name, file, group, href)`, where `group` is one of the `skillGroups` ids (`data`, `eng`, `ml`). Filter captions are in `skillGroups`. |
-| Nav sections | `sections`: ids must match the `id` on each section element. |
-
-## Images and assets
-
-Files in `public/` are served from the site root: `public/orgs/atos.svg` becomes `/orgs/atos.svg`.
-
-| Asset | Folder | Format and size |
-| --- | --- | --- |
-| Achievement photos | `public/image-uploads/` | WebP about 1200px on the long side, quality ~75 (the card shows ~572×440) |
-| Toolkit icons | `public/image-uploads/` | SVG, or WebP at 160px |
-| Organisation icons | `public/orgs/` | SVG, or WebP at 64px; shown on a white tile, so dark and light marks both work |
-| Company, school, venue logos | `public/companies/`, `schools/`, `venues/` | WebP or SVG, small |
-| Project marks | `public/projects/` | WebP with a transparent background |
-
-- **Case matters.** `Logo.png` and `logo.png` are different files on Vercel and in CI. `npm run build` checks every path and fails with the file name if one doesn't match.
-- **Prefer names without spaces.** Older photos have them and work, but new files should use dashes.
-- **SVGs from other sites** are only ever used through `<img>` or CSS masks, never inlined, so they can't run scripts.
-
 ## Conventions
+
+These matter if you change the components themselves, not just the content.
 
 **Code style.** Prettier (`.prettierrc.json`): no semicolons, single quotes, 200-character lines. Comments explain *why*, not *what*. TypeScript is strict; avoid `any` (lint fails on it).
 
@@ -191,7 +252,7 @@ The built site sends a strict Content-Security-Policy: scripts, styles, fonts an
 2. `vercel.json`: HTTP headers on Vercel (also `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`)
 3. `public/_headers`: the same headers for Netlify or Cloudflare Pages
 
-Adding anything external (an analytics script, a font CDN, an embed, an API call) means updating the policy in all three, or the browser will block it. There's no `dangerouslySetInnerHTML` anywhere; keep it that way.
+Adding anything from another domain (a font CDN, an embed, an API call, a third-party analytics script) means updating the policy in all three, or the browser will block it. Vercel Web Analytics needs no change, because Vercel serves it from the site's own domain. There's no `dangerouslySetInnerHTML` anywhere; keep it that way.
 
 ### Supply chain
 
@@ -225,36 +286,6 @@ There are three automated pieces, and only one of them is a pipeline file:
 
 To make CI a real gate, enable branch protection on `main` in GitHub (Settings → Branches) and require the **Format, lint, type check and build** check.
 
-## Deploying
-
-1. Push to GitHub.
-2. In Vercel, **Add New → Project** and import the repo. It detects Vite: build command `npm run build`, output directory `dist`. No environment variables are needed.
-3. **Settings → Domains**: add the custom domain and set the DNS records Vercel shows.
-
-`vercel.json` applies the security headers automatically. Every later push to `main` redeploys.
-
-## Resume
-
-The resume is served from this repo at `/Krishna-Somani-Resume.pdf`, so the link never changes. To update it, export the new PDF to `~/Documents/Resume/Krishna-Resume.pdf`, then:
-
-```bash
-npm run resume
-git add public/Krishna-Somani-Resume.pdf && git commit -m "Update resume" && git push
-```
-
-Vercel redeploys on push. On another machine, just replace `public/Krishna-Somani-Resume.pdf` and keep the name.
-
-## Display font
-
-KS Pixel is generated, not drawn by hand: every glyph is built from rectangles and 45° strokes in `scripts/build-font.py` and compiled to `public/fonts/ks-pixel.woff2`.
-
-```bash
-pip install fonttools brotli shapely
-python3 scripts/build-font.py
-```
-
-It covers A–Z (lowercase maps to the capitals), 0–9 and `. , : ; ! ' ? - – · % × & $ /`. Any other character in a display heading falls back to the monospace font, so add a glyph before using it.
-
 ## Gotchas
 
 - **ESLint isn't used, on purpose.** typescript-eslint doesn't support TypeScript 7 yet; oxlint runs the same rule sets (`.oxlintrc.json`) and does.
@@ -262,3 +293,20 @@ It covers A–Z (lowercase maps to the capitals), 0–9 and `. , : ; ! ' ? - –
 - **Changing page height** (adding, removing or filtering content) needs `ScrollTrigger.refresh()`, or triggers further down fire in the wrong place.
 - **Hero and pinned sections use `svh` units**, so mobile browser bars don't make them jump.
 - **After rebuilding KS Pixel,** hard-reload; browsers cache the font.
+
+## Credit and license
+
+The code and the KS Pixel font are [MIT licensed](LICENSE). You can use, change and publish them, including for your own portfolio. The one condition is that you **keep the `LICENSE` file**, with my name in it, in your copy.
+
+If this theme helped you, I'd also appreciate it if you:
+
+- ⭐ **star this repo**, and
+- keep a small credit in your footer, such as `Design by Krishna Somani` linking to [kr7shnasomani.is-a.dev](https://kr7shnasomani.is-a.dev).
+
+Neither of those is required. They just help other people find the theme.
+
+**Not covered by the MIT license:**
+
+- **My personal content:** my photo (`public/image-uploads/krishna-somani.webp`), my resume PDF, and the bio, experience, project and achievement text in `src/content.ts`. Replace these with your own.
+- **Third-party logos and marks:** everything in `public/companies/`, `public/schools/`, `public/orgs/`, `public/venues/` and `public/socials/`, plus the tool, company and event images in `public/image-uploads/`. They belong to their owners and are shown here only to name them.
+- **Dependencies:** each one keeps its own license (Inter, for example, is under the SIL Open Font License).

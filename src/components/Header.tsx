@@ -55,7 +55,7 @@ export default function Header() {
       className={`fixed inset-x-0 top-0 z-50 h-16 border-b transition-colors duration-500 ${!scrolled ? 'border-transparent' : onPaper ? 'border-hairline-onpaper bg-paper/80 text-ink-onpaper backdrop-blur-md' : 'border-hairline bg-void/70 backdrop-blur-md'}`}
     >
       <div className="relative flex h-full items-center justify-between px-6 md:px-12 lg:px-[7.25rem]">
-        <a href="#top" aria-label={`${profile.name}, back to top`} className="relative -m-1.5 p-1.5">
+        <a href="#top" aria-label={`KS, ${profile.name}, back to top`} className="relative -m-1.5 p-1.5">
           <span
             data-nav-badge
             className={`chamfer grid size-8 place-items-center font-display text-[13px] transition-colors duration-500 ${onPaper ? 'bg-ink-onpaper text-paper' : 'bg-ink text-void'}`}
@@ -91,10 +91,10 @@ export default function Header() {
             className={`mono flex min-h-11 min-w-11 items-center justify-end gap-2.5 transition-colors duration-300 ${onPaper ? 'text-dim-onpaper hover:text-ink-onpaper' : 'text-ink-dim hover:text-ink'}`}
           >
             {/* Mobile: three-line burger that folds into a cross */}
-            <span aria-hidden className="relative block h-3.5 w-[18px] md:hidden">
-              <span className={`absolute inset-x-0 top-0 h-px bg-current transition-transform duration-300 ${open ? 'translate-y-[6.5px] rotate-45' : ''}`} />
-              <span className={`absolute inset-x-0 top-1/2 h-px bg-current transition-opacity duration-300 ${open ? 'opacity-0' : ''}`} />
-              <span className={`absolute inset-x-0 bottom-0 h-px bg-current transition-transform duration-300 ${open ? '-translate-y-[6.5px] -rotate-45' : ''}`} />
+            <span aria-hidden className="relative block h-3.5 w-5 md:hidden">
+              <span className={`absolute inset-x-0 top-0 h-[1.5px] bg-current transition-transform duration-300 ${open ? 'translate-y-[6.25px] rotate-45' : ''}`} />
+              <span className={`absolute inset-x-0 top-1/2 h-[1.5px] -translate-y-1/2 bg-current transition-opacity duration-300 ${open ? 'opacity-0' : ''}`} />
+              <span className={`absolute inset-x-0 bottom-0 h-[1.5px] bg-current transition-transform duration-300 ${open ? '-translate-y-[6.25px] -rotate-45' : ''}`} />
             </span>
             <span className="sr-only">Menu, current section: </span>
             <span className="sr-only md:not-sr-only">{label}</span>
@@ -117,7 +117,7 @@ export default function Header() {
                 href={`#${s.id}`}
                 onClick={() => setOpen(false)}
                 aria-current={active === s.id ? 'location' : undefined}
-                className={`mono flex px-4 py-2 transition-colors hover:bg-white/6 hover:text-ink ${active === s.id ? 'text-ink shadow-[inset_2px_0_0_var(--color-ink)]' : 'text-ink-dim'}`}
+                className={`mono flex min-h-11 items-center px-4 transition-colors hover:bg-white/6 md:min-h-0 md:py-2 hover:text-ink ${active === s.id ? 'text-ink shadow-[inset_2px_0_0_var(--color-ink)]' : 'text-ink-dim'}`}
               >
                 {s.label}
               </a>

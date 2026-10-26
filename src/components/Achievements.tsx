@@ -2,7 +2,8 @@ import { useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { achievements, orgs } from '../content'
 import { EASE, gsap, lockScroll, MQ, revealOnScroll, useGSAP } from '../lib/motion'
-import { Noise, Reveal, Tag } from './ui'
+import { useSwipeRow } from '../lib/swipe'
+import { Noise, Reveal, SwipeControls, Tag } from './ui'
 
 type Achievement = (typeof achievements)[number]
 
@@ -42,6 +43,7 @@ export default function Achievements() {
   const ref = useRef<HTMLElement>(null)
   const dialog = useRef<HTMLDialogElement>(null)
   const [viewing, setViewing] = useState<Achievement | null>(null)
+  const { row, rowClass, at, go } = useSwipeRow(achievements.length)
   const view = (a: Achievement) => {
     // Render the title and photo before opening, so the dialog has its name when focus lands in it
     flushSync(() => setViewing(a))
@@ -70,42 +72,49 @@ export default function Achievements() {
 
   return (
     <section ref={ref} id="achievements" className="relative overflow-x-clip bg-surface">
-      <div className="shell py-32 lg:py-[190px]">
-        <Reveal className="mb-20 flex flex-col gap-8 lg:mb-28">
+      <div className="shell py-20 md:py-32 lg:py-[190px]">
+        <Reveal className="mb-12 flex flex-col gap-8 md:mb-20 lg:mb-28">
           <Tag>Achievements</Tag>
           <h2 className="h2 max-w-[760px]">Built under the clock</h2>
         </Reveal>
 
-        {/* Photo and copy share the content column as two equal halves, so each entry sits centred under the
-            section heading rather than hanging off the page edge */}
-        <div className="flex flex-col gap-28 lg:gap-40">
+        {/* Desktop: photo and copy share the content column as two equal halves, so each entry sits centred under
+            the section heading. Below that the entries become cards in a sideways swipe row that bleeds to the screen
+            edges, with the next card peeking in */}
+        <div {...row} className={`${rowClass} lg:flex-col lg:gap-40`}>
           {achievements.map((a) => (
-            <article key={a.title} data-profile className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            <article
+              key={a.title}
+              data-profile
+              className="grid w-[86%] shrink-0 snap-start content-start gap-5 max-lg:notch max-lg:bg-raised max-lg:[--n:24px] sm:w-[60%] md:w-[55%] lg:w-auto lg:grid-cols-2 lg:items-center lg:gap-16"
+            >
               <div data-profile-shot className="relative aspect-[680/520] w-full overflow-hidden bg-void lg:aspect-auto lg:h-[440px]">
                 <button type="button" onClick={() => view(a)} className="group absolute inset-0 cursor-zoom-in">
                   <img src={a.image} alt={a.title} loading="lazy" decoding="async" className="absolute inset-0 size-full object-cover" style={{ objectPosition: a.focus }} />
                   <Noise className="opacity-30" />
-                  <span className="chamfer mono absolute right-3 bottom-3 bg-void/80 px-2.5 py-1.5 text-ink opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+                  <span className="chamfer mono absolute right-3 bottom-3 bg-void/80 px-2.5 py-1.5 text-ink opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 pointer-coarse:opacity-100">
                     View full ↗
                   </span>
                   <span className="sr-only">View the {a.title} photo full size</span>
                 </button>
               </div>
-              <div className="flex flex-col gap-8">
+              <div className="flex flex-col gap-4 max-lg:px-5 max-lg:pb-7 lg:gap-8">
                 <div data-profile-copy>
                   <Tag>{a.date}</Tag>
                 </div>
                 {/* Half-column titles step down until xl so the longest word ("University") fits at 1024 */}
-                <h3 data-profile-copy className="h2 lg:max-xl:text-[44px]">
+                {/* Phone cards set it smaller so the longest titles stay within three lines */}
+                <h3 data-profile-copy className="h2 max-lg:text-[26px] max-lg:leading-[1.15] lg:max-xl:text-[44px]">
                   {a.title}
                 </h3>
-                <p data-profile-copy className="body-lg leading-8 text-ink-dim">
+                <p data-profile-copy className="body-lg leading-8 text-ink-dim max-lg:text-[15px] max-lg:leading-6">
                   <span className="text-ink">{a.highlight}</span> {describe(a.description)}
                 </p>
               </div>
             </article>
           ))}
         </div>
+        <SwipeControls at={at} count={achievements.length} go={go} noun="achievement" />
       </div>
       {/* Full-size view; the native dialog handles focus and Escape, and a backdrop click closes it via onClick */}
       {/* oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- the backdrop click is a mouse shortcut; Escape closes it from the keyboard */}

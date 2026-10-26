@@ -18,7 +18,7 @@ export function Button({ variant = 'primary', children, className = '', ...props
     <a
       {...props}
       {...(external && { target: '_blank', rel: 'noopener noreferrer' })}
-      className={`group relative inline-flex items-center justify-center px-6 py-[15px] font-mono text-[13px] leading-4 font-medium tracking-[0.15em] whitespace-nowrap uppercase transition-[scale] duration-150 ease-out active:scale-[0.96] motion-reduce:active:scale-100 ${variant === 'primary' ? 'text-void' : 'text-ink'} ${className}`}
+      className={`group relative inline-flex h-10 items-center justify-center px-4 font-mono text-[11px] leading-4 font-medium tracking-[0.1em] whitespace-nowrap uppercase sm:h-auto sm:px-6 sm:py-[15px] sm:text-[13px] sm:tracking-[0.15em] transition-[scale] duration-150 ease-out active:scale-[0.96] motion-reduce:active:scale-100 ${variant === 'primary' ? 'text-void' : 'text-ink'} ${className}`}
     >
       {variant === 'primary' ? (
         <span aria-hidden className="chamfer absolute inset-0 bg-ink transition-colors duration-150 group-hover:bg-slot" />
@@ -135,6 +135,36 @@ export function CircuitFrame({ background, traces = 0, className = '', children 
       <div className="absolute top-[22.7cqw] right-[3.05cqw] bottom-[4.1cqw] left-[3.8cqw] grid place-items-center overflow-hidden bg-[#f3f2f1] [clip-path:polygon(0_0,100%_0,100%_calc(100%-min(18cqw,56px)),calc(100%-min(18cqw,56px))_100%,0_100%)]">
         {children}
         <Noise className="opacity-25" />
+      </div>
+    </div>
+  )
+}
+
+// Counter and previous/next buttons under a swipe row, for people who don't think to swipe and for keyboards
+export function SwipeControls({ at, count, go, noun }: { at: number; count: number; go: (dir: number) => void; noun: string }) {
+  return (
+    <div className="mt-5 flex items-center justify-between lg:hidden">
+      <span className="mono text-ink-dim" aria-live="polite">
+        <span className="text-ink">{at + 1}</span> / {count}
+      </span>
+      <div className="flex gap-2">
+        {[
+          { dir: -1, label: `Previous ${noun}`, d: 'M7.5 2.5 4 6l3.5 3.5', off: at === 0 },
+          { dir: 1, label: `Next ${noun}`, d: 'M4.5 2.5 8 6 4.5 9.5', off: at === count - 1 },
+        ].map((b) => (
+          <button
+            key={b.dir}
+            type="button"
+            aria-label={b.label}
+            disabled={b.off}
+            onClick={() => go(b.dir)}
+            className="chamfer grid size-11 place-items-center bg-white/9 text-ink transition-[opacity,scale] duration-150 active:scale-95 disabled:opacity-30 motion-reduce:active:scale-100"
+          >
+            <svg aria-hidden viewBox="0 0 12 12" className="size-3.5">
+              <path d={b.d} fill="none" stroke="currentColor" strokeWidth="1.4" />
+            </svg>
+          </button>
+        ))}
       </div>
     </div>
   )

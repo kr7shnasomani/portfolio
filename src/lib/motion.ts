@@ -1,7 +1,7 @@
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Lenis from 'lenis'
+import type Lenis from 'lenis'
 import { useEffect } from 'react'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
@@ -19,6 +19,7 @@ export const MQ = {
   mobile: '(max-width: 47.9999rem)',
   motionOk: '(prefers-reduced-motion: no-preference)',
   reduced: '(prefers-reduced-motion: reduce)',
+  finePointer: '(hover: hover) and (pointer: fine)',
 } as const
 
 let lenis: Lenis | null = null
@@ -50,44 +51,60 @@ export function useSmoothScroll() {
       window.removeEventListener('scroll', idle)
       window.removeEventListener('pointermove', moved)
     }
-    if (window.matchMedia(MQ.reduced).matches) return unlisten
-    const instance = new Lenis({ lerp: 0.14 })
-    lenis = instance
-    instance.on('scroll', ScrollTrigger.update)
-    const tick = (time: number) => instance.raf(time * 1000)
-    gsap.ticker.add(tick)
-    gsap.ticker.lagSmoothing(0)
-
-    // In-page anchors glide through Lenis instead of jumping
-    const onClick = (e: MouseEvent) => {
-      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
-      const a = (e.target as Element).closest?.('a[href^="#"]')
-      const id = a?.getAttribute('href')?.slice(1)
-      const target = id ? document.getElementById(id) : null
-      if (!target) return
-      e.preventDefault()
-      // Lenis already honours the root's scroll-padding-top, which clears the fixed header
-      instance.scrollTo(target)
-      // A native jump moves focus to the target; do the same so Tab carries on from there (the skip link relies on it)
-      if (!target.matches('a[href], button, input, select, textarea, [tabindex]')) target.setAttribute('tabindex', '-1')
-      target.focus({ preventScroll: true })
-      history.replaceState(null, '', `#${id}`)
-    }
-    document.addEventListener('click', onClick)
-
+    // Lenis only smooths wheels: touch screens scroll natively either way, so they skip it, its download and the
+    // per-frame tick it would add
+    if (window.matchMedia(MQ.reduced).matches || !window.matchMedia(MQ.finePointer).matches) return unlisten
+    let stop = () => {}
+    let cancelled = false
+    import('lenis')
+      .then(({ default: Lenis }) => {
+        if (!cancelled) stop = startLenis(new Lenis({ lerp: 0.14 }))
+      })
+      // Smooth scrolling is an extra: if its chunk fails to load the page simply scrolls natively
+      .catch(() => {})
     return () => {
+      cancelled = true
       unlisten()
-      document.removeEventListener('click', onClick)
-      gsap.ticker.remove(tick)
-      instance.destroy()
-      lenis = null
+      stop()
     }
   }, [])
 }
 
+function startLenis(instance: Lenis) {
+  lenis = instance
+  instance.on('scroll', ScrollTrigger.update)
+  const tick = (time: number) => instance.raf(time * 1000)
+  gsap.ticker.add(tick)
+  gsap.ticker.lagSmoothing(0)
+
+  // In-page anchors glide through Lenis instead of jumping
+  const onClick = (e: MouseEvent) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+    const a = (e.target as Element).closest?.('a[href^="#"]')
+    const id = a?.getAttribute('href')?.slice(1)
+    const target = id ? document.getElementById(id) : null
+    if (!target) return
+    e.preventDefault()
+    // Lenis already honours the root's scroll-padding-top, which clears the fixed header
+    instance.scrollTo(target)
+    // A native jump moves focus to the target; do the same so Tab carries on from there (the skip link relies on it)
+    if (!target.matches('a[href], button, input, select, textarea, [tabindex]')) target.setAttribute('tabindex', '-1')
+    target.focus({ preventScroll: true })
+    history.replaceState(null, '', `#${id}`)
+  }
+  document.addEventListener('click', onClick)
+
+  return () => {
+    document.removeEventListener('click', onClick)
+    gsap.ticker.remove(tick)
+    instance.destroy()
+    lenis = null
+  }
+}
+
 // Elements drift toward the pointer; each mover has its own range (px) and lag. Fine pointers only.
 export function pointerParallax(movers: { el: Element | null; range: number; duration: number; yScale?: number }[]) {
-  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
+  if (!window.matchMedia(MQ.finePointer).matches) return
   const setters = movers
     .filter((m) => m.el)
     .map((m) => ({

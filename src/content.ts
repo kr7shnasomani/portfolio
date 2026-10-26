@@ -15,7 +15,8 @@ export const profile = {
 export const socials = [
   { label: 'GitHub', href: 'https://github.com/kr7shnasomani', icon: '/socials/github.svg', color: '#181717' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/kr7shnasomani', icon: '/socials/linkedin.svg', color: '#0a66c2' },
-  { label: 'Kaggle', href: 'https://www.kaggle.com/kr7shnasomani', icon: '/socials/kaggle.svg', color: '#20beff' },
+  // Kaggle is off for now; uncomment to show it again
+  // { label: 'Kaggle', href: 'https://www.kaggle.com/kr7shnasomani', icon: '/socials/kaggle.svg', color: '#20beff' },
   // LeetCode is off for now; uncomment to show it again (its full-colour hover logo is leetcode-color.svg)
   // { label: 'LeetCode', href: 'https://leetcode.com/u/kr7shnasomani/', icon: '/socials/leetcode.svg', color: "url('/socials/leetcode-color.svg') center / contain no-repeat" },
   { label: 'X', href: 'https://x.com/kr7shnasomani', icon: '/socials/x.svg', color: '#000000' },

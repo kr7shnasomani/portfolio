@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { profile } from '../content'
-import { EASE, gsap, MQ, PERSPECTIVE, pointerParallax, useGSAP } from '../lib/motion'
+import { EASE, gsap, MQ, PERSPECTIVE, pointerParallax, ScrollTrigger, useGSAP } from '../lib/motion'
 import City, { type Box } from './City'
 import { Button } from './ui'
 
@@ -81,6 +81,13 @@ export default function Hero() {
       const navBadge = document.querySelector('[data-nav-badge]')
       const starField: Element = q('[data-stars]')[0]
       const starLayerEls: Element[] = q('[data-star-layer]')
+
+      // Once the hero has scrolled fully away, stop rendering its backdrop: the city's 3D faces and twinkling stars
+      // otherwise stay live GPU layers that the browser re-stacks every frame for the rest of the page
+      const backdrop = q('[data-hero-backdrop]')[0] as HTMLElement
+      // Applied on refresh too: a page opened already scrolled past the hero never toggles
+      const showWhenNear = (self: ScrollTrigger) => (backdrop.style.contentVisibility = self.isActive ? '' : 'hidden')
+      ScrollTrigger.create({ trigger: hero, start: 'top bottom', end: 'bottom top', onToggle: showWhenNear, onRefresh: showWhenNear })
 
       // A conditions object only runs when at least one matches, so motionOk keeps tablet and phone covered
       gsap.matchMedia().add({ desktop: MQ.desktop, motionOk: MQ.motionOk }, (ctx) => {
@@ -233,9 +240,9 @@ export default function Hero() {
   )
 
   return (
-    <section ref={root} id="top" className="relative h-[120svh] motion-reduce:h-auto md:h-[145svh] md:motion-reduce:h-auto lg:h-[230svh] lg:motion-reduce:h-auto">
+    <section ref={root} id="top" className="relative h-[175svh] motion-reduce:h-auto md:h-[145svh] md:motion-reduce:h-auto lg:h-[230svh] lg:motion-reduce:h-auto">
       <div data-hero-stage className="sticky top-0 h-svh overflow-hidden bg-raised">
-        <div aria-hidden className="absolute inset-0">
+        <div aria-hidden data-hero-backdrop className="absolute inset-0">
           {/* Both skies overhang the stage, which sets where the horizon glow sits */}
           <div data-sky="bright" className="sky-bright absolute top-[-2.7%] right-[-1.4%] bottom-[-1.75%] left-[-11.775%]" />
           <div data-sky="dark" className="sky-dark invisible absolute top-[-2.7%] right-[-1.4%] bottom-[-1.75%] left-[-11.775%] opacity-0" />
@@ -273,10 +280,11 @@ export default function Hero() {
                 {profile.name}
               </h1>
             </div>
-            <p data-hero-item className="font-mono text-[22px] leading-none font-semibold tracking-[-0.02em] uppercase md:text-[28px]">
+            <p data-hero-item className="font-mono text-lg leading-none font-semibold tracking-[-0.02em] uppercase sm:text-[22px] md:text-[28px]">
               Applied AI Engineer
             </p>
-            <div data-hero-item data-hero-cta className="flex flex-wrap justify-center gap-3">
+            {/* Phones keep the pair on one row at a compact size, so the buttons support the name rather than outweigh it */}
+            <div data-hero-item data-hero-cta className="flex flex-wrap justify-center gap-2 sm:gap-3">
               <Button href={profile.resume}>View resume</Button>
               <Button href="#projects" variant="secondary">
                 Explore projects

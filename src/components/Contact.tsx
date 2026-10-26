@@ -29,11 +29,11 @@ function SocialTile({ label, href, icon, color }: (typeof links)[number]) {
     <a
       href={href}
       {...(external && { target: '_blank', rel: 'noopener noreferrer' })}
-      className="group relative grid size-14 place-items-center transition-transform duration-200 ease-out motion-safe:pointer-fine:hover:-translate-y-1 md:size-16"
+      className="group relative grid size-12 place-items-center transition-transform duration-200 ease-out motion-safe:pointer-fine:hover:-translate-y-1 sm:size-14 md:size-16"
     >
       <span aria-hidden className="chamfer absolute inset-0 bg-white/14 transition-colors duration-200 group-hover:bg-ink" />
       <span aria-hidden className="chamfer absolute inset-px bg-surface/85 transition-colors duration-200 group-hover:bg-ink" />
-      <span aria-hidden className="relative size-6 [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] md:size-[26px]" style={{ maskImage: `url('${icon}')` }}>
+      <span aria-hidden className="relative size-5 [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] sm:size-6 md:size-[26px]" style={{ maskImage: `url('${icon}')` }}>
         {/* Brand fill fades in over the dim one by opacity, not a colour transition, so a gradient (Instagram) or a
             full-colour logo image drawn inside the same mask works too */}
         <span className="absolute inset-0 bg-ink-dim" />
@@ -104,10 +104,10 @@ export function Contact() {
         <div data-cta-item>
           <Tag>Connect</Tag>
         </div>
-        <h2 data-cta-item data-cta-headline className="cta-headline max-w-[1000px] text-center font-display text-[clamp(2.5rem,7vw,5.5rem)] leading-[1.02] uppercase">
+        <h2 data-cta-item data-cta-headline className="cta-headline max-w-[1000px] text-center font-display text-[clamp(2rem,9vw,5.5rem)] md:text-[clamp(2.5rem,7vw,5.5rem)] leading-[1.02] uppercase">
           Running through lines of code
         </h2>
-        <ul aria-label="Find me on" className="flex flex-wrap items-center justify-center gap-3 md:gap-4">
+        <ul aria-label="Find me on" className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 md:gap-4">
           {links.map((s) => (
             <li key={s.label} data-cta-sub>
               <SocialTile {...s} />
@@ -137,18 +137,19 @@ export function Footer() {
     <footer ref={ref} className="relative bg-void">
       <div aria-hidden data-horizon className="h-px w-full origin-left bg-hairline" />
       <span aria-hidden className="absolute top-0 left-6 size-2 -translate-y-1/2 bg-ink-dim md:left-12 lg:left-[max(7.25rem,calc((100vw-75.5rem)/2))]" />
-      <div className="shell flex flex-col gap-12 pt-20 pb-14">
-        <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
+      <div className="shell flex flex-col gap-10 pt-14 pb-10 md:gap-12 md:pt-20 md:pb-14">
+        <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col gap-[18px]">
             <p className="font-display text-xl uppercase">{profile.name}</p>
-            <p className="mono max-w-[340px] text-ink-dim">{profile.bio}</p>
+            {/* Phones read the bio as a sentence; the spaced-out label style is for the wider footer */}
+            <p className="max-w-[340px] text-sm leading-6 text-ink-dim md:mono">{profile.bio}</p>
           </div>
           {/* A map of the page; the socials live in Connect above */}
           <nav aria-label="Footer">
-            <ul className="flex flex-wrap gap-x-9 gap-y-3 pt-[3px]">
+            <ul className="grid grid-cols-2 gap-x-6 pt-[3px] md:flex md:flex-wrap md:gap-x-9 md:gap-y-3">
               {pages.map((s) => (
                 <li key={s.id}>
-                  <a href={`#${s.id}`} className="mono inline-flex min-h-11 items-center text-ink-dim underline-offset-4 transition-colors hover:text-ink hover:underline md:min-h-0">
+                  <a href={`#${s.id}`} className="mono inline-flex min-h-10 items-center text-ink-dim underline-offset-4 transition-colors hover:text-ink hover:underline md:min-h-0">
                     {s.label}
                   </a>
                 </li>
@@ -158,7 +159,7 @@ export function Footer() {
                   href={profile.resume}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mono inline-flex min-h-11 items-center text-ink-dim underline-offset-4 transition-colors hover:text-ink hover:underline md:min-h-0"
+                  className="mono inline-flex min-h-10 items-center text-ink-dim underline-offset-4 transition-colors hover:text-ink hover:underline md:min-h-0"
                 >
                   Resume ↗<span className="sr-only"> (opens in a new tab)</span>
                 </a>
@@ -166,7 +167,7 @@ export function Footer() {
             </ul>
           </nav>
         </div>
-        <div className="relative flex flex-col gap-3 border-t border-hairline pt-6 md:flex-row md:items-center md:justify-between">
+        <div className="relative flex flex-col gap-1 border-t border-hairline pt-5 md:flex-row md:items-center md:justify-between md:gap-3 md:pt-6">
           <span aria-hidden className="absolute -top-1.5 left-0 h-[13px] w-px bg-ink-dim" />
           <span aria-hidden className="absolute -top-1.5 right-0 h-[13px] w-px bg-ink-dim" />
           <p className="mono text-ink-dim">

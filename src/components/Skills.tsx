@@ -88,7 +88,7 @@ export default function Skills() {
 
   return (
     <section id="skills" className="relative bg-paper text-ink-onpaper">
-      <div className="shell pt-32 pb-28 lg:pb-40">
+      <div className="shell pt-20 pb-20 md:pt-32 md:pb-28 lg:pb-40">
         <Reveal y={18} duration={0.6} start="top 75%" className="flex flex-col">
           <div data-reveal>
             <Tag onPaper>Toolkit</Tag>
@@ -97,7 +97,7 @@ export default function Skills() {
             The stack
             <br />I build with
           </h2>
-          <div data-reveal className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <div data-reveal className="mt-10 flex flex-wrap items-center gap-x-8 md:mt-14 gap-y-4">
             <div role="group" aria-label="Filter tools" className="flex flex-wrap gap-2">
               <Toggle on={filter === 'all'} aria-pressed={filter === 'all'} onClick={() => choose('all')}>
                 Everything
@@ -114,12 +114,12 @@ export default function Skills() {
           </div>
         </Reveal>
 
-        <ul ref={grid} className="mt-10 grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-9">
+        <ul ref={grid} className="mt-10 grid grid-cols-4 gap-x-3 gap-y-6 sm:gap-x-4 sm:gap-y-8 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-9">
           {shown.map((tool) => (
             <li key={tool.name}>
               <a href={tool.href} target="_blank" rel="noopener noreferrer" className="group flex flex-col focus-visible:outline-offset-4">
                 <Frame tool={tool} index={skills.indexOf(tool)} />
-                <p className="mt-3 text-[15px] leading-5 md:text-base md:leading-6">{tool.name}</p>
+                <p className="mt-2 text-[13px] leading-[18px] sm:mt-3 sm:text-[15px] sm:leading-5 md:text-base md:leading-6">{tool.name}</p>
                 <span className="sr-only"> (opens in a new tab)</span>
               </a>
             </li>
